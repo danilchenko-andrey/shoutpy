@@ -37,4 +37,3 @@ class Storage(object):
             self._stream_file.writelines(['%s,%s\n' % (station_id, p) for p in playlist])
             self._stream_file.flush()
             self._logger.info('%d songs from station %s stored!' % (len(playlist), station_id))
-

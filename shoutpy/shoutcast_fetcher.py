@@ -50,12 +50,3 @@ class ShoutcastDirectory(object):
             parts = line.strip().split('=', 1)
             if parts[0].startswith('File'):
                 yield parts[1]
-
-
-
-
-
-
-
-
-
