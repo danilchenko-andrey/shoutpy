@@ -8,7 +8,7 @@ import time
 import re
 
 
-queue = multiprocessing.Queue(0)
+queue = multiprocessing.Queue()
 
 
 def fetcher(n):
@@ -37,7 +37,7 @@ def main():
     logger.info('Starting up!')
     shoutcast = ShoutcastDirectory()
 
-    stations = []
+    stations = {}
 
     for line in open('genres.txt', 'r'):
         genre = line.strip()
@@ -54,35 +54,33 @@ def main():
             for i, url in enumerate(streaming_urls):
                 if re.match('http://[0-9.:]*$', url):
                     logger.info('%s:%s => %s' % (station_id, i, url))
-                    stations.append(('%s:%s' % (station_id, i), url))
+                    stations['%s:%s' % (station_id, i)] = url
                 else:
                     logger.warn('Skipping station %s' % url)
+            time.sleep(5)
 
     logger.info('Collected %d stations' % len(stations))
-    # storage = Storage('output')
-    # logger.info('Starting fetch process...')
-    # station_objects = []
-    # for s in stations:
-    #     station = Station(s[0], s[1], storage)
-    #     metadata = station.fetch_metadata()
-    #     storage.store_meta(s[0], metadata)
-    #     station_objects.append(station)
-    #
-    # logger.info('Starting fetchers...')
-    # fetchers = []
-    # for t in xrange(10):
-    #     fetcher_process = multiprocessing.Process(target=fetcher, args=t)
-    #     fetcher_process.start()
-    #     fetchers.append(fetcher_process)
-    #
-    # try:
-    #     scheduler(station_objects)
-    # except:
-    #     logger.error('Stopping fetchers!')
-    #     for p in fetchers:
-    #         p.terminate()
-    #     queue.close()
-    # logger.info('Fetching stopped!')
+    storage = Storage('output')
+    logger.info('Starting fetch process...')
+    station_objects = []
+    for s_id, url in stations.iteritems():
+        station_objects.append(Station(s_id, url, storage))
+
+    logger.info('Starting fetchers...')
+    fetchers = []
+    for t in xrange(10):
+        fetcher_process = multiprocessing.Process(target=fetcher, args=t)
+        fetcher_process.start()
+        fetchers.append(fetcher_process)
+
+    try:
+        scheduler(station_objects)
+    except:
+        logger.error('Stopping fetchers!')
+        for p in fetchers:
+            p.terminate()
+        queue.close()
+    logger.info('Fetching stopped!')
 
 
 if __name__ == '__main__':

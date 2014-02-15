@@ -20,6 +20,11 @@ class Station(object):
         self._browser = mechanize.Browser()
         self._browser.addheaders = [('User-Agent', USER_AGENT)]
         self._logger = logging.getLogger('Station-%s' % station_id)
+        if self._storage:
+            self.fetch_metadata()
+
+    def get_id(self):
+        return self._id
 
     def fetch_metadata(self):
         self._logger.debug('Fetching metadata...')
