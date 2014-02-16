@@ -11,17 +11,22 @@ import re
 queue = multiprocessing.Queue()
 
 
-def fetcher(n):
-    logger = logging.getLogger('Fetcher-%s' % n)
+def fetcher(*args):
+    logger = logging.getLogger('Fetcher-%s' % args[0])
     while True:
         logger.debug('Running...')
         station = queue.get()
+        if not station.stored_meta:
+            station.fetch_metadata()
         station.update_history()
         queue.task_done()
+        time.sleep(1)
 
 
-def scheduler(stations):
+def scheduler(*args):
+    stations = args[0]
     logger = logging.getLogger('Scheduler')
+    logger.info('Starting scheduler...')
     while True:
         logger.info('Queue size: %d' % queue.qsize())
         if queue.qsize() > len(stations):
@@ -66,17 +71,23 @@ def main():
     for s_id, url in stations.iteritems():
         station_objects.append(Station(s_id, url, storage))
 
+    logger.info('Starting scheduler..')
+    scheduler_process = multiprocessing.Process(target=scheduler, args=(station_objects,))
+    scheduler_process.start()
+    logger.info('Scheduler started!')
+
     logger.info('Starting fetchers...')
     fetchers = []
     for t in xrange(10):
-        fetcher_process = multiprocessing.Process(target=fetcher, args=t)
+        fetcher_process = multiprocessing.Process(target=fetcher, args=(t,))
         fetcher_process.start()
         fetchers.append(fetcher_process)
+    logger.info('All fetchers started!')
 
     try:
-        scheduler(station_objects)
-    except:
-        logger.error('Stopping fetchers!')
+        scheduler_process.join()
+    except Exception as e:
+        logger.error('Stopping fetchers: %s' % e.message)
         for p in fetchers:
             p.terminate()
         queue.close()

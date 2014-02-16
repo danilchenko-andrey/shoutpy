@@ -20,8 +20,7 @@ class Station(object):
         self._browser = mechanize.Browser()
         self._browser.addheaders = [('User-Agent', USER_AGENT)]
         self._logger = logging.getLogger('Station-%s' % station_id)
-        if self._storage:
-            self.fetch_metadata()
+        self.stored_meta = False
 
     def get_id(self):
         return self._id
@@ -46,7 +45,8 @@ class Station(object):
         self._logger.debug('Station genre: %s' % genre)
         url = cells[15].find('a', href=True)['href']
         self._logger.debug('Station url: %s' % url)
-        return {'title': title, 'genre': genre, 'url': url}
+        self._storage.store_meta(self._id, {'title': title, 'genre': genre, 'url': url})
+        self.stored_meta = True
 
     def _fetch_current_playlist(self):
         self._logger.debug('Fetching current playlist...')
