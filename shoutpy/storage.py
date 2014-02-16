@@ -23,11 +23,11 @@ class Storage(object):
         self._meta_file.close()
         self._stream_file.close()
 
-    def store_meta(self, station_id, metadata):
+    def store_meta(self, station_id, r):
         self._logger.debug('Storing metadata from station %s: waiting for lock...' % station_id)
         with self._meta_lock:
-            self._meta_file.writelines(['%s,%s,%s,%s\n' %
-                                        (station_id, r['genre'], r['url'], r['title']) for r in metadata])
+            self._meta_file.write('%s,%s,%s,%s\n' %
+                                  (station_id, r['genre'], r['url'], r['title']))
             self._meta_file.flush()
 
     def store(self, station_id, playlist):
