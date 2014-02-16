@@ -5,6 +5,10 @@ import mechanize
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 import logging
+import sys
+from storage import Storage
+import time
+
 
 USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.68 YaBrowser/14.2.1700.8703 Safari/537.36'
 
