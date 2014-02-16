@@ -47,6 +47,7 @@ class Station(object):
         self._logger.debug('Station url: %s' % url)
         self._storage.store_meta(self._id, {'title': title, 'genre': genre, 'url': url})
         self.stored_meta = True
+        return {'title': title, 'genre': genre, 'url': url}
 
     def _fetch_current_playlist(self):
         self._logger.debug('Fetching current playlist...')
@@ -107,19 +108,17 @@ class Station(object):
         return result
 
     def update_history(self):
-        try:
-            playlist = list(self._fetch_current_playlist())
-            new_tracks = self._new_tracks(playlist)
-            if self._storage and len(new_tracks) > 0:
-                self._logger.info('Have %d new tracks in history' % len(new_tracks))
-                self._storage.store(self._id, ['%s,%s,%s' % (p[0], p[1], p[2]) for p in new_tracks])
-                for p in new_tracks:
-                    self._logger.debug('New track: at %s: %s' % (p[0], p[2]))
-            self._history = self._merge_playlist_to_history(playlist)
-            if len(self._history) > self._max_length:
-                self._history = self._history[(len(self._history)-self._max_length):]
-        except:
-            pass
+        playlist = list(self._fetch_current_playlist())
+        new_tracks = self._new_tracks(playlist)
+        if self._storage and len(new_tracks) > 0:
+            self._logger.info('Have %d new tracks in history' % len(new_tracks))
+            self._storage.store(self._id, ['%s,%s,%s' % (p[0], p[1], p[2]) for p in new_tracks])
+            for p in new_tracks:
+                self._logger.debug('New track: at %s: %s' % (p[0], p[2]))
+        self._history = self._merge_playlist_to_history(playlist)
+        if len(self._history) > self._max_length:
+            self._history = self._history[(len(self._history)-self._max_length):]
+        return new_tracks
 
     def get_history(self):
         for track in self._history:

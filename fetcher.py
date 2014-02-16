@@ -9,12 +9,13 @@ import re
 import random
 
 
-def fetch(station):
-    time.sleep(random.randint(10))
-    if not station.stored_meta:
-        station.fetch_metadata()
-    station.update_history()
-    time.sleep(1)
+# def fetch(x):
+#     return x*x
+
+
+# def fetcher(stations, s_id):
+#     time.sleep(random.randint(10))
+#     return s_id, stations[s_id].update_history()
 
 
 def main():
@@ -50,15 +51,14 @@ def main():
     logger.info('Starting fetch process...')
     station_objects = []
     for s_id, url in stations.iteritems():
-        station_objects.append(Station(s_id, url, storage))
+        station = Station(s_id, url, storage)
+        station_objects.append(station)
+        station.fetch_metadata()
 
-    logger.info('Starting scheduler..')
-    pool = multiprocessing.Pool(10)
+    logger.debug('Prepare fetching...')
     while True:
-        logger.debug('Prepare fetching...')
-        pool.map(fetch, station_objects)
-        logger.info('Fetch finished!')
-        time.sleep(60)
+        for s in station_objects:
+            s.update_history()
     logger.info('Fetching stopped!')
 
 
