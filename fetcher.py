@@ -17,6 +17,7 @@ def fetcher(*args):
         logger.debug('Running...')
         station = queue.get()
         if not station.stored_meta:
+            logger.debug('Fetching metadata...')
             station.fetch_metadata()
         station.update_history()
         queue.task_done()
@@ -28,8 +29,10 @@ def scheduler(*args):
     logger = logging.getLogger('Scheduler')
     logger.info('Starting scheduler...')
     while True:
+        logger.debug('Adding stations to queue...')
         for s in stations:
             queue.put(s)
+        logger.info('Stations added to queue')
         time.sleep(600)
 
 
