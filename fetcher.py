@@ -28,9 +28,6 @@ def scheduler(*args):
     logger = logging.getLogger('Scheduler')
     logger.info('Starting scheduler...')
     while True:
-        logger.info('Queue size: %d' % queue.qsize())
-        if queue.qsize() > len(stations):
-            logger.warn('Too big queue size!')
         for s in stations:
             queue.put(s)
         time.sleep(600)
