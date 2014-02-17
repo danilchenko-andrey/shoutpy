@@ -18,7 +18,7 @@ class Storage(object):
         if need_locks:
             self._lock = multiprocessing.Lock()
             self._meta_lock = multiprocessing.Lock()
-        self._logger = logging.getLogger('Storage')
+        self._logger = logging.getLogger('shoutpy.Storage')
         self._logger.info('Initialized storage writing to %s' % output_dir)
 
     def __del__(self):

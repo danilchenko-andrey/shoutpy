@@ -20,7 +20,7 @@ def _set_m3u(browser, url):
 class ShoutcastDirectory(object):
 
     def __init__(self):
-        self._logger = logging.getLogger('ShoutcastDirectory')
+        self._logger = logging.getLogger('shoutpy.ShoutcastDirectory')
         self._logger.debug('Initializing browser...')
         self._browser = mechanize.Browser()
         cj = cookielib.LWPCookieJar()

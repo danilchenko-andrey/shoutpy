@@ -23,7 +23,7 @@ class Station(object):
         self._storage = storage
         self._browser = mechanize.Browser()
         self._browser.addheaders = [('User-Agent', USER_AGENT)]
-        self._logger = logging.getLogger('Station-%s' % station_id)
+        self._logger = logging.getLogger('shoutpy.Station-%s' % station_id)
         self.stored_meta = False
 
     def get_id(self):
