@@ -15,7 +15,7 @@ USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_5) AppleWebKit/537.36 
 
 class Station(object):
 
-    def __init__(self, station_id, url, storage=None, max_length=100):
+    def __init__(self, station_id, url, storage=None, max_length=20):
         self._id = station_id
         self._url = url
         self._history = []
