@@ -9,14 +9,14 @@ import re
 import sys
 
 
-def main():
+def main(n):
     logger = logging.getLogger('FetcherMain')
 
     logger.info('Starting up!')
     shoutcast = ShoutcastDirectory()
 
     stations = {}
-    for line in open(sys.argv[1], 'r'):
+    for line in open('genres-%s.txt' % n, 'r'):
         genre = line.strip()
         logger.info('Fetching stations of genre: %s' % genre)
         genre_stations = shoutcast.get_genre_top_stations(genre)
@@ -38,8 +38,8 @@ def main():
             time.sleep(1)
 
     logger.info('Collected %d stations' % len(stations))
-    os.makedirs('output-%s' % genre)
-    storage = Storage('output-%s' % genre)
+    os.makedirs('output/output-%s' % n)
+    storage = Storage('output/output-%s' % n)
     logger.info('Starting fetch process...')
     station_objects = []
     for s_id, url in stations.iteritems():
@@ -57,4 +57,4 @@ def main():
 
 if __name__ == '__main__':
     logging.basicConfig(format=u'%(asctime)s %(levelname)-8s %(name)s: %(message)s', level=logging.DEBUG)
-    main()
+    main(sys.argv[1])
