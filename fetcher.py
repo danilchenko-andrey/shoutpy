@@ -9,32 +9,33 @@ import re
 import sys
 
 
-def main(genre):
+def main():
     logger = logging.getLogger('FetcherMain')
 
     logger.info('Starting up!')
     shoutcast = ShoutcastDirectory()
 
     stations = {}
-
-    logger.info('Fetching stations of genre: %s' % genre)
-    genre_stations = shoutcast.get_genre_top_stations(genre)
-    for station_url in genre_stations:
-        m = re.search('\?id=([0-9]*)', station_url)
-        if not m:
-            logger.warn('id not found: %s' % station_url)
-            continue
-        station_id = m.group(1)
-
-        streaming_urls = shoutcast.get_station_urls(station_url)
-        for i, url in enumerate(streaming_urls):
-            if re.match('http://[0-9.:]*$', url):
-                logger.info('%s:%s => %s' % (station_id, i, url))
-                stations['%s:%s' % (station_id, i)] = url
-                break
-            else:
-                logger.warn('Skipping station %s' % url)
-        time.sleep(5)
+    for line in open(sys.argv[1], 'r'):
+        genre = line.strip()
+        logger.info('Fetching stations of genre: %s' % genre)
+        genre_stations = shoutcast.get_genre_top_stations(genre)
+        for station_url in genre_stations:
+            m = re.search('\?id=([0-9]*)', station_url)
+            if not m:
+                logger.warn('id not found: %s' % station_url)
+                continue
+            station_id = m.group(1)
+    
+            streaming_urls = shoutcast.get_station_urls(station_url)
+            for i, url in enumerate(streaming_urls):
+                if re.match('http://[0-9.:]*$', url):
+                    logger.info('%s:%s => %s' % (station_id, i, url))
+                    stations['%s:%s' % (station_id, i)] = url
+                    break
+                else:
+                    logger.warn('Skipping station %s' % url)
+            time.sleep(1)
 
     logger.info('Collected %d stations' % len(stations))
     os.makedirs('output-%s' % genre)
@@ -50,10 +51,10 @@ def main(genre):
     while True:
         for s in station_objects:
             s.update_history()
-        time.sleep(60)
+        time.sleep(1)
     logger.info('Fetching stopped!')
 
 
 if __name__ == '__main__':
     logging.basicConfig(format=u'%(asctime)s %(levelname)-8s %(name)s: %(message)s', level=logging.DEBUG)
-    main(sys.argv[1])
+    main()
