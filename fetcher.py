@@ -61,7 +61,7 @@ if __name__ == '__main__':
     logger.setLevel(logging.DEBUG)
 
     # create console handler and set level to debug
-    ch = logging.handlers.RotatingFileHandler('logs/fetcher-%s' % sys.argv[1], maxBytes=100*1024*1024, backupCount=3)
+    ch = logging.handlers.RotatingFileHandler('logs/fetcher-%s.log' % sys.argv[1], maxBytes=100*1024*1024, backupCount=3)
     ch.setLevel(logging.DEBUG)
 
     # create formatter
